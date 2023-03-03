@@ -55,5 +55,5 @@ in order to get Bing AI to work, you will need access to the new Bing
 
 # Running
 ```
- $ python3 ChatGPTDiscord.py            
+ $ python3 Jarvisdiscord.py            
 ```
