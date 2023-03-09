@@ -93,7 +93,9 @@ if __name__ == "__main__":
                 answer += f"{key}. {source['url']} - {source['title']} \n"
             
             answer += f"\n{text_answer}"
-            r = tidy_response(answer)
+            final_answer = f'> **{user_message}** - <@{str(interaction.user.id)}' + '> \n\n'
+            final_answer += answer
+            r = tidy_response(final_answer)
             s = add_brackets_to_hyperlink(r)
             chunks = split_string_into_chunks(s, 1920)
             for chunk in chunks:
