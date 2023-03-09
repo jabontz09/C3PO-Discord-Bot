@@ -58,6 +58,8 @@ if __name__ == "__main__":
 #    thread = Thread(target=run_api);thread.start()
     with open("config.json", "r") as f: config = json.load(f)
     client = aclient()
+    with open("message_ranks.json", "r") as f: user_messages = json.load(f)        
+
     @client.event
     async def on_ready():
         await client.tree.sync()
@@ -109,5 +111,53 @@ if __name__ == "__main__":
         - `/search [message]` search the web with C3P0!""")
         print(
             "\x1b[31mSomeone need help!\x1b[0m")
+        
+    @client.event
+    async def on_message(message):
+        # Ignore messages from bots
+        if message.author.bot: return
+        # Get the channel ID and the user ID
+        channel_id = message.channel.id
+        user_id = message.author.id
+         # Check if the channel ID is in the dictionary
+        if channel_id not in user_messages:
+        # If not, create a new sub-dictionary for the channel
+            user_messages[channel_id] = {}
+        # Check if the user ID is in the sub-dictionary
+        if user_id not in user_messages[channel_id]:
+        # If not, initialize the message count to 1
+            user_messages[channel_id][user_id] = 1
+        else:
+        # If yes, increment the message count by 1
+            user_messages[channel_id][user_id] += 1
+        #save the file
+        with open("message_ranks.json", "w") as file:
+            json.dump(user_messages, file)    
+    # Define a command to display the ranking for a channel
 
+    @client.tree.command()
+    async def ranking(ctx: discord.Interaction):
+        # Get the channel ID
+        channel_id = ctx.channel.id
+
+        await ctx.response.defer(ephemeral=False)
+        # Check if the channel ID is in the dictionary
+        if channel_id not in user_messages:
+            # If not, send a message that there is no data
+            await ctx.followup.send("No data for this channel.")
+        else:
+            # If yes, sort the sub-dictionary by values in descending order
+            sorted_users = sorted(user_messages[channel_id].items(), key=lambda x: x[1], reverse=True)
+            # Create a list to store the ranking
+            ranking = []
+            # Loop through the sorted users
+            for user_id, message_count in sorted_users:
+                # Get the user object from the user ID
+                user = await ctx.guild.fetch_member(user_id)
+                # Append the user name and message count to the ranking list
+                ranking.append(f"{user.name}: {message_count}")
+            # Join the ranking list with newlines and send it as a message
+            await ctx.followup.send("\n".join(ranking))
+    
     client.run(config["discord_bot_token"])
+
