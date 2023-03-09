@@ -145,11 +145,11 @@ if __name__ == "__main__":
 
         
 
-    @client.tree.command(name="help", description="Show help for Jarvis")
+    @client.tree.command(name="help", description="Show help for C3P0")
     async def help(interaction: discord.Interaction):
         await interaction.response.defer(ephemeral=False)
-        await interaction.followup.send("""**Commands for Jarvis** \n
-        - `/search [message]` search the web with Jarvis!""")
+        await interaction.followup.send("""**Commands for C3P0** \n
+        - `/search [message]` search the web with C3P0!""")
         print(
             "\x1b[31mSomeone need help!\x1b[0m")
 
