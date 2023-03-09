@@ -48,8 +48,8 @@ def tidy_response(i):# Optionally spoilerify or hide the most repetitive annoyin
             for br in bad_responses:i=i.replace(br, "")
         if spoiler_bad_responses and bad_responses_string != '':i+='\n||'+bad_responses_string+'||'
     if rebrand_responses:
-        i=i.replace("OpenAI", "Iron Men")
-        i=i.replace("Microsoft", "Iron Men")
+        i=i.replace("OpenAI", "The Jedi Order")
+        i=i.replace("Microsoft", "The Jedi Order")
         i=i.replace("Sydney", "C3PO AI")
         i=i.replace("Bing", "C3P0 on the web")
     return i
