@@ -51,51 +51,8 @@ def tidy_response(i):# Optionally spoilerify or hide the most repetitive annoyin
         i=i.replace("OpenAI", "Iron Men")
         i=i.replace("Microsoft", "Iron Men")
         i=i.replace("Sydney", "C3PO AI")
-        i=i.replace("Bing", "Jarvis on the web")
-        i=i.replace("!Dream:", "!dream ")
+        i=i.replace("Bing", "C3P0 on the web")
     return i
-
-def to_thread(func: typing.Callable) -> typing.Coroutine:
-    @functools.wraps(func)
-    async def wrapper(*args, **kwargs):
-        loop = asyncio.get_event_loop()
-        wrapped = functools.partial(func, *args, **kwargs)
-        return await loop.run_in_executor(None, wrapped)
-    return wrapper
-
-@to_thread
-def get_answer(chatbot,query):
-    for data in chatbot.ask(query):
-        pass
-    return data["message"]
-
-async def bing_search(chatbot, prompt) -> int:
-    try:
-        response = await chatbot.ask(prompt=prompt)
-        #get conversation count index
-        invocations = int(response['invocationId'])
-        message = response["item"]["messages"][1]["adaptiveCards"][0]["body"][0]["text"]
-        message += f" (we are allowed {5 - invocations} more search(es) for this conversation before data has to be reset)"
-        print(message)
-        r=tidy_response(message)
-        s = add_brackets_to_hyperlink(r)
-        chunks=split_string_into_chunks(s,1975) # Make sure response chunks fit inside a discord message (max 2k characters)
-
-        data = {
-            "messageCount": invocations + 1,
-            "success": True,
-            "message": chunks
-        }
-        return data
-
-    except Exception as e:
-        print(e)
-        data = {
-            "messageCount": 0,
-            "success": False,
-            "message": ["Sorry there appears to have been a problem"]
-        }
-        return data
 
 if __name__ == "__main__":
 #    thread = Thread(target=run_api);thread.start()
@@ -136,7 +93,7 @@ if __name__ == "__main__":
             answer += f"\n{text_answer}"
             r = tidy_response(answer)
             s = add_brackets_to_hyperlink(r)
-            chunks = split_string_into_chunks(s)
+            chunks = split_string_into_chunks(s, 1920)
             for chunk in chunks:
                 await interaction.followup.send(chunk)
         except Exception as e:
